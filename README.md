@@ -1,4 +1,4 @@
-# Discord AI Chatbot dengan GitHub Copilot
+# Discord AI Chatbot dengan Gemini API
 
 Bot ini dibuat untuk dua mode pemakaian:
 
@@ -9,15 +9,15 @@ Bot ini dibuat untuk dua mode pemakaian:
 
 Default konfigurasi proyek ini memakai:
 
-- `claude-haiku-4.5`
+- `gemini-2.5-flash`
 
 Alasannya:
 
-- ringan dan cepat untuk percakapan Discord
-- umumnya lebih hemat dibanding model besar
-- kualitas jawabannya sudah cukup bagus untuk chatbot komunitas
+- kualitas gratisnya sangat bagus untuk chatbot komunitas
+- latency tetap cepat untuk percakapan Discord
+- punya free tier resmi sehingga enak untuk mulai
 
-Kalau nanti Anda ingin sedikit lebih "rapi" untuk instruksi panjang, Anda bisa coba `gpt-5-mini`, tetapi untuk starting point saya sarankan tetap `claude-haiku-4.5`.
+Kalau nanti Anda ingin versi yang lebih hemat, Anda bisa coba `gemini-2.5-flash-lite`, tetapi untuk starting point saya sarankan tetap `gemini-2.5-flash`.
 
 ## Setup
 
@@ -36,9 +36,9 @@ Kalau nanti Anda ingin sedikit lebih "rapi" untuk instruksi panjang, Anda bisa c
 3. Isi `.env`:
 
    - `DISCORD_BOT_TOKEN`: token bot Discord
-   - `GITHUB_COPILOT_TOKEN`: token Copilot yang akan Anda pakai
-   - `COPILOT_MODEL`: model Copilot, default `claude-haiku-4.5`
-   - `COPILOT_BASE_URL`: default `https://api.githubcopilot.com`
+   - `GEMINI_API_KEY`: API key Gemini dari Google AI Studio
+   - `GEMINI_MODEL`: model Gemini, default `gemini-2.5-flash`
+   - `GEMINI_BASE_URL`: default `https://generativelanguage.googleapis.com/v1beta`
    - `AI_CHANNEL_IDS`: daftar channel ID Discord yang akan menjadi channel AI
 
 4. Jalankan:
@@ -57,5 +57,5 @@ Kalau nanti Anda ingin sedikit lebih "rapi" untuk instruksi panjang, Anda bisa c
 
 ## Catatan penting
 
-- Implementasi ini disusun untuk memakai endpoint chat completion yang kompatibel dengan konfigurasi Copilot Anda.
-- Jika akun atau endpoint Copilot Anda memakai format autentikasi yang berbeda, sesuaikan `GITHUB_COPILOT_TOKEN` atau `COPILOT_BASE_URL`.
+- Implementasi ini memakai REST API Gemini langsung, jadi cukup isi API key Gemini Anda di `.env`.
+- Kalau nanti Anda ingin model yang lebih hemat, ganti `GEMINI_MODEL` menjadi `gemini-2.5-flash-lite`.

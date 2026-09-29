@@ -28,9 +28,9 @@ def _parse_channel_ids(raw_value: str) -> tuple[int, ...]:
 @dataclass(frozen=True)
 class Settings:
     discord_bot_token: str
-    github_copilot_token: str
-    copilot_model: str
-    copilot_base_url: str
+    gemini_api_key: str
+    gemini_model: str
+    gemini_base_url: str
     ai_channel_ids: tuple[int, ...]
     max_history_messages: int
     response_temperature: float
@@ -44,9 +44,9 @@ class Settings:
         if not discord_bot_token:
             raise ValueError("DISCORD_BOT_TOKEN is required.")
 
-        github_copilot_token = os.getenv("GITHUB_COPILOT_TOKEN", "").strip()
-        if not github_copilot_token:
-            raise ValueError("GITHUB_COPILOT_TOKEN is required.")
+        gemini_api_key = os.getenv("GEMINI_API_KEY", "").strip()
+        if not gemini_api_key:
+            raise ValueError("GEMINI_API_KEY is required.")
 
         raw_channel_ids = os.getenv("AI_CHANNEL_IDS", "").strip()
         if not raw_channel_ids:
@@ -81,11 +81,11 @@ class Settings:
 
         return cls(
             discord_bot_token=discord_bot_token,
-            github_copilot_token=github_copilot_token,
-            copilot_model=os.getenv("COPILOT_MODEL", "claude-haiku-4.5").strip()
-            or "claude-haiku-4.5",
-            copilot_base_url=os.getenv(
-                "COPILOT_BASE_URL", "https://api.githubcopilot.com"
+            gemini_api_key=gemini_api_key,
+            gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
+            or "gemini-2.5-flash",
+            gemini_base_url=os.getenv(
+                "GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta"
             ).rstrip("/"),
             ai_channel_ids=_parse_channel_ids(raw_channel_ids),
             max_history_messages=max_history_messages,
