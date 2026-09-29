@@ -8,7 +8,7 @@ import discord
 import httpx
 
 from bot.config import Settings
-from bot.copilot import ChatMessage, CopilotResponseError, GitHubCopilotClient
+from bot.gemini import ChatMessage, GeminiClient, GeminiResponseError
 
 LOGGER = logging.getLogger(__name__)
 DISCORD_MESSAGE_LIMIT = 2000
@@ -38,10 +38,10 @@ class DiscordAiBot(discord.Client):
 
         self.settings = settings
         self.conversations = ConversationStore(settings.max_history_messages)
-        self.copilot = GitHubCopilotClient(
-            token=settings.github_copilot_token,
-            model=settings.copilot_model,
-            base_url=settings.copilot_base_url,
+        self.gemini = GeminiClient(
+            api_key=settings.gemini_api_key,
+            model=settings.gemini_model,
+            base_url=settings.gemini_base_url,
             temperature=settings.response_temperature,
         )
 
@@ -64,34 +64,36 @@ class DiscordAiBot(discord.Client):
 
         history_key = self._history_key(message)
         messages = [
-            ChatMessage(role="system", content=self.settings.system_prompt),
             *self.conversations.get(history_key),
             ChatMessage(role="user", content=prompt),
         ]
 
         async with message.channel.typing():
             try:
-                response_text = await self.copilot.create_response(messages)
+                response_text = await self.gemini.create_response(
+                    system_prompt=self.settings.system_prompt,
+                    messages=messages,
+                )
             except httpx.HTTPStatusError as exc:
                 LOGGER.error(
-                    "Copilot HTTP error %s: %s", exc.response.status_code, exc.response.text
+                    "Gemini HTTP error %s: %s", exc.response.status_code, exc.response.text
                 )
                 await message.reply(
-                    "Aku gagal menghubungi Copilot API. Cek token, model, atau endpoint-nya ya.",
+                    "Aku gagal menghubungi Gemini API. Cek API key, model, atau endpoint-nya ya.",
                     mention_author=False,
                 )
                 return
             except (httpx.TimeoutException, httpx.NetworkError) as exc:
-                LOGGER.error("Copilot network error: %s", exc)
+                LOGGER.error("Gemini network error: %s", exc)
                 await message.reply(
-                    "Koneksi ke Copilot sedang bermasalah. Coba lagi sebentar ya.",
+                    "Koneksi ke Gemini sedang bermasalah. Coba lagi sebentar ya.",
                     mention_author=False,
                 )
                 return
-            except CopilotResponseError as exc:
-                LOGGER.error("Copilot payload error: %s", exc)
+            except GeminiResponseError as exc:
+                LOGGER.error("Gemini payload error: %s", exc)
                 await message.reply(
-                    "Balasan dari Copilot tidak bisa diproses. Cek konfigurasi model atau endpoint.",
+                    "Balasan dari Gemini tidak bisa diproses. Cek konfigurasi model atau endpoint.",
                     mention_author=False,
                 )
                 return
