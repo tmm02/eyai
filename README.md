@@ -9,7 +9,7 @@ Bot ini dibuat untuk dua mode pemakaian:
 
 Default konfigurasi proyek ini memakai:
 
-- `gemini-2.5-flash`
+- `gemini-3.8-flash`
 
 Alasannya:
 
@@ -17,7 +17,7 @@ Alasannya:
 - latency tetap cepat untuk percakapan Discord
 - punya free tier resmi sehingga enak untuk mulai
 
-Kalau nanti Anda ingin versi yang lebih hemat, Anda bisa coba `gemini-2.5-flash-lite`, tetapi untuk starting point saya sarankan tetap `gemini-2.5-flash`.
+Kalau model yang Anda pakai tidak tersedia saat itu, coba `gemini-3.8-flash` atau `gemini-3.8-flash-lite`; untuk starting point saya sarankan `gemini-3.8-flash`.
 
 ## Setup
 
@@ -37,7 +37,7 @@ Kalau nanti Anda ingin versi yang lebih hemat, Anda bisa coba `gemini-2.5-flash-
 
    - `DISCORD_BOT_TOKEN`: token bot Discord
    - `GEMINI_API_KEY`: API key Gemini dari Google AI Studio
-   - `GEMINI_MODEL`: model Gemini, default `gemini-2.5-flash`
+   - `GEMINI_MODEL`: model Gemini, default `gemini-3.8-flash`
    - `GEMINI_BASE_URL`: default `https://generativelanguage.googleapis.com/v1beta`
    - `AI_CHANNEL_IDS`: daftar channel ID Discord yang akan menjadi channel AI
 
@@ -58,4 +58,4 @@ Kalau nanti Anda ingin versi yang lebih hemat, Anda bisa coba `gemini-2.5-flash-
 ## Catatan penting
 
 - Implementasi ini memakai REST API Gemini langsung, jadi cukup isi API key Gemini Anda di `.env`.
-- Kalau nanti Anda ingin model yang lebih hemat, ganti `GEMINI_MODEL` menjadi `gemini-2.5-flash-lite`.
+- Kalau nanti Anda ingin model yang lebih hemat, ganti `GEMINI_MODEL` menjadi `gemini-3.8-flash-lite` atau model yang tersedia di Google AI Studio Anda.

@@ -82,8 +82,8 @@ class Settings:
         return cls(
             discord_bot_token=discord_bot_token,
             gemini_api_key=gemini_api_key,
-            gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
-            or "gemini-2.5-flash",
+            gemini_model=os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip()
+            or "gemini-3.8-flash",
             gemini_base_url=os.getenv(
                 "GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta"
             ).rstrip("/"),

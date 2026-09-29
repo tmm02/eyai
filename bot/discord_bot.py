@@ -75,13 +75,20 @@ class DiscordAiBot(discord.Client):
                     messages=messages,
                 )
             except httpx.HTTPStatusError as exc:
+                status = exc.response.status_code if exc.response is not None else 0
                 LOGGER.error(
-                    "Gemini HTTP error %s: %s", exc.response.status_code, exc.response.text
+                    "Gemini HTTP error %s: %s", status, exc.response.text if exc.response else str(exc)
                 )
-                await message.reply(
-                    "Aku gagal menghubungi Gemini API. Cek API key, model, atau endpoint-nya ya.",
-                    mention_author=False,
-                )
+                if status == 503:
+                    await message.reply(
+                        "Gemini sedang dibanjiri permintaan sementara. Coba lagi dalam beberapa detik ya.",
+                        mention_author=False,
+                    )
+                else:
+                    await message.reply(
+                        "Aku gagal menghubungi Gemini API. Cek API key, model, atau endpoint-nya ya.",
+                        mention_author=False,
+                    )
                 return
             except (httpx.TimeoutException, httpx.NetworkError) as exc:
                 LOGGER.error("Gemini network error: %s", exc)

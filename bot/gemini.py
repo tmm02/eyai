@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 from typing import Any, Sequence
 
@@ -45,18 +46,33 @@ class GeminiClient:
             },
         }
 
-        async with httpx.AsyncClient(timeout=self._timeout) as client:
-            response = await client.post(
-                (
-                    f"{self._base_url}/models/"
-                    f"{self._model}:generateContent?key={self._api_key}"
-                ),
-                json=payload,
-            )
-            response.raise_for_status()
+        retries = 3
+        for attempt in range(retries + 1):
+            try:
+                async with httpx.AsyncClient(timeout=self._timeout) as client:
+                    response = await client.post(
+                        (
+                            f"{self._base_url}/models/"
+                            f"{self._model}:generateContent?key={self._api_key}"
+                        ),
+                        json=payload,
+                    )
+                    response.raise_for_status()
+            except httpx.HTTPStatusError as exc:
+                status = exc.response.status_code if exc.response is not None else 0
+                if status not in {429, 500, 502, 503, 504} or attempt == retries:
+                    raise
+                await self._sleep_before_retry(attempt)
+                continue
 
-        data = response.json()
-        return self._extract_text(data)
+            data = response.json()
+            return self._extract_text(data)
+
+        raise GeminiResponseError("Gemini request failed after retries.")
+
+    async def _sleep_before_retry(self, attempt: int) -> None:
+        delay = 2 ** attempt
+        await asyncio.sleep(delay)
 
     def _to_gemini_content(self, message: ChatMessage) -> dict[str, Any]:
         role = "model" if message.role == "assistant" else "user"
