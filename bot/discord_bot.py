@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from collections import defaultdict, deque
 from collections.abc import Iterable
 
@@ -121,8 +122,14 @@ class DiscordAiBot(discord.Client):
         mention_trigger = self.user.mentioned_in(message)
         referenced_bot_message = await self._get_referenced_bot_message(message)
         reply_trigger = referenced_bot_message is not None
+        mass_ping = message.mention_everyone or bool(message.role_mentions)
 
         if not in_ai_channel and not mention_trigger and not reply_trigger:
+            if mass_ping:
+                return None
+            return None
+
+        if mass_ping and not (in_ai_channel or mention_trigger or reply_trigger):
             return None
 
         clean_content = message.content
@@ -131,6 +138,8 @@ class DiscordAiBot(discord.Client):
                 f"<@!{self.user.id}>", ""
             )
 
+        clean_content = re.sub(r"@everyone|@here", "", clean_content)
+        clean_content = re.sub(r"<@&\d+>", "", clean_content)
         clean_content = clean_content.strip()
         attachment_text = _format_attachments(message.attachments)
 
